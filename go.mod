@@ -1,4 +1,4 @@
-module github.com/bitrise-io/go-steputils
+module github.com/nacho4d/go-steputils
 
 go 1.15
 
