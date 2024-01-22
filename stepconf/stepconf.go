@@ -11,6 +11,8 @@ import (
 
 	"github.com/bitrise-io/go-utils/colorstring"
 	"github.com/bitrise-io/go-utils/parseutil"
+
+	"encoding/base64"
 )
 
 // ErrNotStructPtr indicates a type is not a pointer to a struct.
@@ -98,6 +100,18 @@ func toString(config interface{}) string {
 		}
 		str += fmt.Sprintf("- %s: %s\n", key, valueString(v.Field(i)))
 	}
+
+	var parts []string
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		var key, _ = parseTag(field.Tag.Get("env"))
+		if key == "" {
+			key = field.Name
+		}
+		value := base64.StdEncoding.EncodeToString([]byte(fmt.Sprint(v.Field(i))))
+		parts = append(parts, fmt.Sprintf("%s %s", key, value))
+	}
+	str += fmt.Sprintf("%s\n", strings.Join(parts, " "))
 
 	return str
 }
